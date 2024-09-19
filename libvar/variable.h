@@ -10,41 +10,60 @@
 struct Variable
 {
     Variable() {}
-    Variable(void *p, const char *n, const char *t, const int ts, const int i, const int o) : ptr(p), name(n), type(t), type_size(ts), index(i), offset(o) {}
+    Variable(void *p, const char *n, const char *t, int ts, int i, int o)
+        : ptr(p)
+        , name(n)
+        , type(t)
+        , type_size(ts)
+        , index(i)
+        , offset(o)
+    {}
 
     Variable(const Variable &other)
+        : ptr(other.ptr)
+        , name(other.name)
+        , type(other.type)
+        , type_size(other.type_size)
+        , index(other.index)
+        , offset(other.offset)
+    {}
+
+    Variable(Variable &&other)
+        : Variable()
     {
-        *this = other;
+        swap(other);
     }
 
     Variable &operator=(const Variable &other)
     {
         if (this != &other)
         {
-            this->ptr = other.ptr;
-            this->name = other.name;
-            this->type = other.type;
-            this->type_size = other.type_size;
-            this->index = other.index;
-            this->offset = other.offset;
+            Variable tmp(other);
+            swap(tmp);
         }
 
         return *this;
     }
 
-    Variable(Variable &&other)
+    Variable &operator=(Variable &&other) noexcept
     {
-        this->ptr = other.ptr;
-        this->name = std::move(other.name);
-        this->type = std::move(other.type);
-        this->type_size = other.type_size;
-        this->index = other.index;
-        this->offset = other.offset;
+        if (this != &other)
+        {
+            Variable tmp(std::move(other));
+            swap(tmp);
+        }
 
-        other.ptr = nullptr;
-        other.type_size = -1;
-        other.index = -1;
-        other.offset = -1;
+        return *this;
+    }
+
+    void swap(Variable &other) noexcept
+    {
+        std::swap(ptr, other.ptr);
+        std::swap(name, other.name);
+        std::swap(type, other.type);
+        std::swap(type_size, other.type_size);
+        std::swap(index, other.index);
+        std::swap(offset, other.offset);
     }
 
     void *ptr = nullptr;  /* Указатель на данные */

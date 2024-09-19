@@ -11,8 +11,23 @@
 class Variable
 {
 public:
+    enum Type
+    {
+        UNKNOWN = -1,
+        CHAR,
+        UCHAR,
+        SHORT,
+        USHORT,
+        INT,
+        UINT,
+        LONG,
+        ULONG,
+        FLOAT,
+        DOUBLE
+    };
+
     Variable() = delete;
-    explicit Variable(const char *name_str, const char *type_str, const int ts, const int i, const int o)
+    Variable(const char *name_str, const char *type_str, const int ts, const int i, const int o)
     {
         if (strcasecmp(type_str, "c") == 0)
         {
@@ -75,47 +90,54 @@ public:
     }
 
     Variable(const Variable &other)
+        : name(other.name)
+        , type_str(other.type_str)
+        , value(other.value)
+        , type(other.type)
+        , type_size(other.type_size)
+        , index(other.index)
+        , offset(other.offset)
+    {}
+
+    Variable(Variable &&other) noexcept
     {
-        *this = other;
+        swap(other);
     }
 
     Variable &operator=(const Variable &other)
     {
         if (this != &other)
         {
-            this->value = other.value;
-            this->name = other.name;
-            this->type_str = other.type_str;
-
-            this->type = other.type;
-            this->type_size = other.type_size;
-            this->index = other.index;
-            this->offset = other.offset;
+            Variable tmp(other);
+            swap(tmp);
         }
 
         return *this;
     }
 
-    Variable(Variable &&other)
+    Variable &operator=(Variable &&other) noexcept
     {
-        this->value = std::move(other.value);
-        this->name = std::move(other.name);
-        this->type_str = std::move(other.type_str);
+        if (this != &other)
+        {
+            Variable tmp(std::move(other));
+            swap(tmp);
+        }
 
-        this->type = other.type;
-        this->type_size = other.type_size;
-        this->index = other.index;
-        this->offset = other.offset;
-
-        other.type = UNKNOWN;
-        other.type_size = -1;
-        other.index = -1;
-        other.offset = -1;
+        return *this;
     }
 
-    bool valid() const { return type != UNKNOWN; }
+    void swap(Variable &other) noexcept
+    {
+        std::swap(name, other.name);
+        std::swap(type_str, other.type_str);
+        std::swap(value, other.value);
+        std::swap(type, other.type);
+        std::swap(type_size, other.type_size);
+        std::swap(index, other.index);
+        std::swap(offset, other.offset);
+    }
 
-    enum Type { UNKNOWN = -1, CHAR, UCHAR, SHORT, USHORT, INT, UINT, LONG, ULONG, FLOAT, DOUBLE };
+    inline bool valid() const noexcept { return type != UNKNOWN; }
 
     QString name;
     QString type_str;

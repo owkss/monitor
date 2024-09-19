@@ -6,10 +6,10 @@
 #include <functional>
 
 #ifdef _WIN32
-#include <windows.h>
+#   include <windows.h>
 #else
-#include <unistd.h>
-#include <sys/syscall.h>
+#   include <unistd.h>
+#   include <sys/syscall.h>
 #endif
 
 int VarManager::add_variable(void *var_ptr, const char *var_name, const char *var_type, int type_size)
@@ -25,8 +25,7 @@ int VarManager::add_variable(void *var_ptr, const char *var_name, const char *va
     if (index == 0)
         offset = 0;
 
-    Variable v(var_ptr, var_name, var_type, type_size, index, offset);
-    m_variables.push_back(v);
+    m_variables.emplace_back(var_ptr, var_name, var_type, type_size, index, offset);
     offset += type_size;
 
     return 0;
@@ -68,7 +67,7 @@ int VarManager::init()
     }
 
     m_work = true;
-    m_thread = std::thread(std::bind(&VarManager::read_shared_memory, this));
+    m_thread = std::thread(&VarManager::read_shared_memory, this);
 
     return m_thread.joinable() ? 0 : 4;
 }

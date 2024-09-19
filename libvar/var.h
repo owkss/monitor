@@ -9,15 +9,15 @@ extern "C" {
 
 #if defined(_WIN32)
     #if defined(VAR_LIBRARY)
-        #define VAR_LIBSPEC __declspec(dllexport)
+        #define VAR_DECLSPEC __declspec(dllexport)
     #else
-        #define VAR_LIBSPEC /* При динамической компоновке добавить __declspec(dllimport) */
+        #define VAR_DECLSPEC /* При динамической компоновке добавить __declspec(dllimport) */
     #endif
 #else
     #if defined(__GNUC__) && (__GNUC__ >= 4)
-        #define VAR_LIBSPEC __attribute__((visibility("default")))
+        #define VAR_DECLSPEC __attribute__((visibility("default")))
     #else
-        #define VAR_LIBSPEC
+        #define VAR_DECLSPEC
     #endif
 #endif // _WIN32
 
@@ -28,13 +28,13 @@ extern "C" {
  * @param var_type - тип переменной
  * @return Не ноль в случае ошибки
  */
-int add_variable(void *var_ptr, const char *var_name, const char *var_type);
+VAR_DECLSPEC int var_add(void *var_ptr, const char *var_name, const char *var_type);
 
 /**
  * @brief Начало работы. Все последующие вызовы add_variable игнорируются
  * @return Не ноль в случае ошибки
  */
-int init();
+VAR_DECLSPEC int var_init();
 
 #ifdef __cplusplus
 }

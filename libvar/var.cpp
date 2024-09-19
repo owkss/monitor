@@ -3,9 +3,9 @@
 
 #include <cstring>
 
-static VarManager vm;
+static VarManager g_vm;
 
-int get_type_size(const char *var_str)
+static int get_type_size(const char *var_str)
 {
     if (strcasecmp(var_str, "c") == 0)
         return 1;
@@ -31,7 +31,7 @@ int get_type_size(const char *var_str)
         return -1;
 }
 
-int add_variable(void *var_ptr, const char *var_name, const char *var_type)
+int var_add(void *var_ptr, const char *var_name, const char *var_type)
 {
     if (!var_ptr)
         return 1;
@@ -48,14 +48,14 @@ int add_variable(void *var_ptr, const char *var_name, const char *var_type)
             if (type_size < 1)
                 return 3;
             else
-                return vm.add_variable(var_ptr, var_name, var_type, type_size);
+                return g_vm.add_variable(var_ptr, var_name, var_type, type_size);
         }
     }
 
     return 4;
 }
 
-int init()
+int var_init()
 {
-    return vm.init();
+    return g_vm.init();
 }

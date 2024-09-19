@@ -45,6 +45,7 @@ void Application::save_log(const char *what, const QObject *receiver, const QEve
     const QDir dir(QStandardPaths::standardLocations(QStandardPaths::DocumentsLocation).first());
     const QString filepath = QDir::toNativeSeparators(dir.absolutePath() + "/" + filename);
 
+    // TODO QFile?
     std::FILE *f = std::fopen(filepath.toLocal8Bit().constData(), "w");
     if (f)
     {
